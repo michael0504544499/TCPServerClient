@@ -5,7 +5,6 @@
 
 
 
-#define BUFFER_SIZE = 4096
 
 class server {
 
@@ -16,16 +15,19 @@ class server {
 	sockaddr_in hint;
 	sockaddr_in client;
 	char * buffer=nullptr;
-	int port;
-	std::string ip;
-
+	static server * _server;
+	static bool init;
+	server();
+	//const std::string &ip, const int  &port
 public:
-	server(const std::string &ip, const int  &port);
+	
 
 	~server();
     void initializeWinsock();
     void createSocket();
 	void connaction();
+	void shutdownServer();
+	static const server& instanceServer();
 
 };
 

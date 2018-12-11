@@ -7,20 +7,26 @@
 #include <iostream>
 #include "server.h"
 
-#define BUFFER_SIZE = 4096
+
+
+
+const int BUFFER_SIZE = 4096;
+const int PORT = 54000;
+const std::string IP_ADDRESS = "127.0.0.1";
+
+
+
 using namespace std;
 
+
+bool server::init = true;
+server* server::_server = nullptr;
 
 
 int main()
 {
 
-	string ip = "127.0.0.1";
-	const int  port = 54000;
-	server _server(ip,port);
-	
-	///_server.connaction();
-	
+	server::instanceServer();
 
 
 	return 0;
@@ -29,7 +35,6 @@ int main()
 
 void server::connaction() {
 	
-
 	//wait for connaction 
 	int clientSize = sizeof(client);
 	clientSocket = accept(listening, (sockaddr*)&client, &clientSize);
@@ -53,14 +58,14 @@ void server::connaction() {
 	closesocket(listening);
 
 	// while loop:accept and echo message bake to client
-	char buf[4096];
+	
 
 	while (true) {
-		ZeroMemory(buf, 4096);
+		ZeroMemory(this->buffer, BUFFER_SIZE);
 
 		//wait for client and send data 
 
-		int bytesReceived = recv(clientSocket, buf, 4096, 0);
+		int bytesReceived = recv(clientSocket, this->buffer, BUFFER_SIZE, 0);
 		if (bytesReceived == SOCKET_ERROR) {
 			cerr << "Error in recv(). Quitting" << endl;
 			break;
@@ -70,17 +75,27 @@ void server::connaction() {
 			break;
 		}
 		//Echo message back to client
-		send(clientSocket, buf, bytesReceived + 1, 0);
+		send(clientSocket, this->buffer, bytesReceived + 1, 0);
 
 
 	}
+
+	shutdownServer();
+	
+
+}
+
+
+
+void server::shutdownServer() {
+	
 	//close the socket
 	closesocket(clientSocket);
 	//cleanup winsock
 	WSACleanup();
-
-
+	delete server::_server;
 }
+
 
 void server::createSocket() {
 
@@ -88,16 +103,18 @@ void server::createSocket() {
 	if (listening == INVALID_SOCKET) {
 		cerr << "Can't create a socket! Quitting";
 	}
+	
 	hint.sin_family = AF_INET;
-	hint.sin_port = htons(port);
-	hint.sin_addr.s_addr = INADDR_ANY;
-
+	hint.sin_port = htons(PORT);
+	inet_pton(AF_INET,IP_ADDRESS.c_str(), &(hint.sin_addr.s_addr));
+	
 	bind(listening,(sockaddr*)&hint, sizeof(hint));
 
 	//tell winsock the socket is for listening 
 	listen(listening,SOMAXCONN);
 
 }
+
 
 void server::initializeWinsock() {
 
@@ -111,10 +128,9 @@ void server::initializeWinsock() {
 }
 
 
-
-
-server::server(const std::string &ip,const int &port) :ip(ip),port(port) {
-	buffer = new char[3];
+server::server(){
+	server::init = false;
+	buffer = new char[BUFFER_SIZE];
 	initializeWinsock();
 	createSocket();
 	connaction();
@@ -122,5 +138,18 @@ server::server(const std::string &ip,const int &port) :ip(ip),port(port) {
 }
 
 server::~server() {
+	cout << "desturactor called"<<endl;
+	delete server::buffer;
+	delete server::_server;
+}
+
+const server& server::instanceServer() {
+	
+	if (server::init) {
+		server::_server = new server();
+		server::init = false;
+		return *server::_server;
+	}
+	return *server::_server;
 
 }
