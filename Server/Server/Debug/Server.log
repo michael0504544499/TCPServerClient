@@ -1,0 +1,3 @@
+﻿  Server.cpp
+c:\users\michael\source\repos\server\server\server.cpp(18): warning C4114: same type qualifier used more than once
+  Server.vcxproj -> C:\Users\michael\source\repos\Server\Debug\Server.exe
