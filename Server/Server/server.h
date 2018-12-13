@@ -1,10 +1,6 @@
 #pragma once
-#pragma comment(lib,"ws2_32.lib")
-#include<iostream>
-#include<WS2tcpip.h>
-
-
-
+#include "params.h"
+#include "multiConnection.h"
 
 class server {
 
@@ -15,16 +11,18 @@ class server {
 	sockaddr_in hint;
 	sockaddr_in client;
 	char * buffer=nullptr;
+	multiConnection* clients = nullptr;
 	static server * _server;
 	static bool init;
+	
 	server();
-	//const std::string &ip, const int  &port
+	
 public:
 	
 
 	~server();
     void initializeWinsock();
-    void createSocket();
+    void createListeningSocket();
 	void connaction();
 	void shutdownServer();
 	static const server& instanceServer();
