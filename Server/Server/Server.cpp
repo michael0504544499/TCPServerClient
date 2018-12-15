@@ -8,6 +8,7 @@
 
 
 
+
 using namespace std;
 
 
@@ -26,15 +27,16 @@ int main()
 
 
 void server::connaction() {
+	client* newClient = new client();
 	
 	while (true) {
 
 		//wait for connaction 
-		int clientSize = sizeof(client);
-		clientSocket = accept(listening, (sockaddr*)&client, &clientSize);
+		int clientSize = sizeof(newClient->getSocketAddr());
+		newClient->setClientSocket (accept(listening, (sockaddr*)&newClient->getSocketAddr(),&clientSize));
 
 
-		this->clients->insertClientSocket(clientSocket, client);
+		this->clients->insertClientSocket(newClient->getClientSocket(), newClient);
 
 		char host[NI_MAXHOST];  //client's remote name 
 		char service[NI_MAXHOST];// service (i.e. port) the client is connect on
@@ -42,13 +44,13 @@ void server::connaction() {
 		ZeroMemory(host, NI_MAXHOST);
 		ZeroMemory(service, NI_MAXHOST);
 
-		if (getnameinfo((sockaddr*)&client, sizeof(client), host, NI_MAXHOST, service, NI_MAXHOST, 0) == 0) {
+		if (getnameinfo((sockaddr*)&newClient->getSocketAddr(), sizeof(newClient->getSocketAddr()), host, NI_MAXHOST, service, NI_MAXHOST, 0) == 0) {
 			
 			cout << host << "connected on port " << service << endl;
 		}
 		else {
-			inet_ntop(AF_INET, &client.sin_addr, host, NI_MAXHOST);
-			cout << host << "connected on port " << ntohs(client.sin_port) << endl;
+			inet_ntop(AF_INET, &newClient->getSocketAddr().sin_addr, host, NI_MAXHOST);
+			cout << host << "connected on port " << ntohs(newClient->getSocketAddr().sin_port) << endl;
 		}
 
 		//close listening socket
@@ -56,18 +58,18 @@ void server::connaction() {
 
 		// while loop:accept and echo message bake to client
 
-		clients->con(clientSocket);
+		clients->con(newClient->getClientSocket());
 
 
 		
-		shutdownServer();
+		shutdownServer(newClient->getClientSocket());
 	}
 	
 }
 
 
 
-void server::shutdownServer() {
+void server::shutdownServer(SOCKET clientSocket) {
 	
 	//close the socket
 	closesocket(clientSocket);
@@ -113,8 +115,8 @@ void server::initializeWinsock() {
 
 
 server::server(){
+
 	server::init = false;
-	buffer = new char[BUFFER_SIZE];
 	this->clients = new multiConnection();
 	initializeWinsock();
 	createListeningSocket();
@@ -126,7 +128,7 @@ server::server(){
 
 server::~server() {
 	cout << "desturactor called"<<endl;
-	delete server::buffer;
+	//do iteration on ckient and delete all 
 	delete server::_server;
 	delete this->clients;
 }

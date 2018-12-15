@@ -1,24 +1,23 @@
 #pragma once
+
 #include "params.h"
 
 
 
+class client;
 
 	class multiConnection {
 
 
-
-
-		std::unordered_map<SOCKET*, sockaddr_in*>* clientSockets;
-
+		std::unordered_map<SOCKET*, client*>* clientSockets;
 
 
 	public:
 		multiConnection();
 		~multiConnection();
-		void insertClientSocket(SOCKET clientSocket, sockaddr_in clientSockAddr);
-		void deleteClientSocet(SOCKET clientSocket, sockaddr_in clientSockAddr);
-		const std::unordered_map<SOCKET*, sockaddr_in*>& getClientSockets();
+		void insertClientSocket(SOCKET clientSocket, client* newClient);
+		void deleteClientSocet(SOCKET clientSocket);
+		const std::unordered_map<SOCKET*, client*>& getClientSockets();
 		void con(SOCKET clientSocket);
 
 	};

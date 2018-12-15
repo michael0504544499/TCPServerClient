@@ -5,6 +5,7 @@
 #include <iostream>
 #include <unordered_map>
 #include "server.h"
+#include "client.h"
 
 
 const int BUFFER_SIZE = 4096;

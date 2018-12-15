@@ -34,11 +34,9 @@ void multiConnection::con(SOCKET clientSocket) {
 }
 
 
-
-
 multiConnection::multiConnection()
 {
-	multiConnection::clientSockets=new std::unordered_map<SOCKET*, sockaddr_in*>();
+	multiConnection::clientSockets=new std::unordered_map<SOCKET*, client*>();
 	
 }
 
@@ -47,23 +45,23 @@ multiConnection::~multiConnection()
 	delete clientSockets;
 }
 
-void multiConnection::insertClientSocket(SOCKET clientSocket, sockaddr_in clientSockAddr)
+void multiConnection::insertClientSocket(SOCKET clientSocket, client* newClient)
 {
 
 	if (this->clientSockets->count(&clientSocket) >= 0) {
-		this->clientSockets->insert({ &clientSocket,&clientSockAddr });
+		this->clientSockets->insert({ &clientSocket,newClient });
 	}
 
 }
 
-void multiConnection::deleteClientSocet(SOCKET clientSocket, sockaddr_in clientSockAddr)
+void multiConnection::deleteClientSocet(SOCKET clientSocket)
 {
 	if (this->clientSockets->count(&clientSocket) > 0) {
 		this->clientSockets->erase(&clientSocket);
 	}
 }
 
-const std::unordered_map<SOCKET*, sockaddr_in*>& multiConnection::getClientSockets()
+const std::unordered_map<SOCKET*, client*>& multiConnection::getClientSockets()
 {
 	return *clientSockets;
 }

@@ -1,2 +1,5 @@
-﻿  client.cpp
+﻿  Server.cpp
+  client.cpp
+  multiConnection.cpp
+  Generating Code...
   Server.vcxproj -> C:\Users\michael\source\repos\Server\Debug\Server.exe

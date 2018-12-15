@@ -2,15 +2,13 @@
 #include "params.h"
 #include "multiConnection.h"
 
+
 class server {
 
 	WSADATA wsaData;
 	WORD ver;
 	SOCKET listening;
-	SOCKET clientSocket;
 	sockaddr_in hint;
-	sockaddr_in client;
-	char * buffer=nullptr;
 	multiConnection* clients = nullptr;
 	static server * _server;
 	static bool init;
@@ -24,7 +22,7 @@ public:
     void initializeWinsock();
     void createListeningSocket();
 	void connaction();
-	void shutdownServer();
+	void shutdownServer(SOCKET clientSocket);
 	static const server& instanceServer();
 
 };
